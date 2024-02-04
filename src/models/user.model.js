@@ -1,6 +1,6 @@
-import mongoose,{Schema} from "mongoose"
-import jwt from "jsonwebtoken.js"
-import bcrypt from "bcrypt.js"
+import mongoose, { Schema } from "mongoose"
+import jwt from "jsonwebtoken/index.js"
+import bcrypt from "bcrypt/bcrypt.js"
 
 const userSchema = new Schema(
     {
@@ -52,13 +52,13 @@ const userSchema = new Schema(
 )
 
 userSchema.pre("save", async function (next) {
-    if(!this.isModifird('password')) return next();
-    this.password = bcrypt.hash(this.password,10)
+    if(!this.isModified('password')) return next();
+    this.password = await bcrypt.hash(this.password,10)
     next()
 })
 
-userSchema.methods.isPasswordCorrect = async function (password){
-   return await bcrypt.compare(password,this.password)
+userSchema.methods.isPasswordCorrect = async function(password){
+    return await bcrypt.compare(password, this.password)
 }
 
 
@@ -72,7 +72,7 @@ userSchema.methods.generateAccessToken = function(){
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-            expiresIn:process.env.ACCESS_TOKEN_EXPIRT,
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRT,
         }
     )
 }
